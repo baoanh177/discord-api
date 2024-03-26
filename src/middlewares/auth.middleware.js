@@ -16,7 +16,10 @@ module.exports = async (req, res, next) => {
         
         const user = await User.findByPk(userId)
         if(!user) throw new Error()
-        req.user = user
+        req.user = {
+            ...user,
+            accessToken    
+        }
         return next()
     } catch (e) {
         return errorResponse(res, 401, "Unauthorized")
