@@ -2,6 +2,8 @@ const {
     loginValidate,
     registerValidate,
     sendVerifyLinkValidate,
+    forgotPasswordValidate,
+    resetPasswordValidate,
 } = require("../../validations/auth.validation")
 const { successResponse, errorResponse } = require("../../utils/response")
 const authServices = require("../../services/auth.service")
@@ -64,7 +66,45 @@ module.exports = {
             errorResponse(res, 500, "Server Error")
         }
     },
-    resetPassword: async (req, res) => {},
+    forgotPassword: async (req, res) => {
+        try {
+            const validateResult = await forgotPasswordValidate(req.body.email)
+            if (!validateResult.ok)
+                return errorResponse(res, 400, "Bad Request")
+
+            const forgotPasswordResult = await authServices.forgotPassword(
+                req.body.email
+            )
+            if (!forgotPasswordResult.ok) throw new Error()
+            successResponse(res, 200, "Success")
+        } catch (e) {
+            errorResponse(res, 500, "Server Error")
+        }
+    },
+    resetPassword: async (req, res) => {
+        try {
+            // Validate
+            const validateResult = await resetPasswordValidate(req.body)
+            if (!validateResult.ok) {
+                return errorResponse(
+                    res,
+                    400,
+                    "Bad Request",
+                    validateResult.errors
+                )
+            }
+
+            // Service
+            const resetPasswordResult = await authServices.resetPassword(req.body)
+            if(!resetPasswordResult.ok) {
+                return errorResponse(res, 400, "Bad Request", resetPasswordResult.errors)
+            }
+            successResponse(res, 200, "Success")
+        } catch (e) {
+            console.log(e)
+            errorResponse(res, 500, "Server Error")
+        }
+    },
     verify: async (req, res) => {
         try {
             const { verifyCode } = req.body
@@ -72,9 +112,14 @@ module.exports = {
 
             const verifyResult = await authServices.verify(verifyCode)
             if (!verifyResult.ok)
-                return errorResponse(res, 400, "Bad Request", verifyResult.errors)
+                return errorResponse(
+                    res,
+                    400,
+                    "Bad Request",
+                    verifyResult.errors
+                )
             successResponse(res, 200, "Success")
-        }catch(e) {
+        } catch (e) {
             errorResponse(res, 500, "Server Error")
         }
     },
@@ -114,10 +159,14 @@ module.exports = {
             if (!accessToken.trim() || !refreshToken.trim())
                 return errorResponse(res, 400, "Bad Request")
 
-            const refreshTokenResult = await authServices.refreshToken(accessToken, refreshToken)
-            if(!refreshTokenResult.ok) return errorResponse(res, 401, "Unauthorized")
+            const refreshTokenResult = await authServices.refreshToken(
+                accessToken,
+                refreshToken
+            )
+            if (!refreshTokenResult.ok)
+                return errorResponse(res, 401, "Unauthorized")
             successResponse(res, 200, "Success", refreshTokenResult.data)
-        }catch(e) {
+        } catch (e) {
             console.log(e)
             errorResponse(res, 500, "Server Error")
         }

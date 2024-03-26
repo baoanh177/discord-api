@@ -2,7 +2,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     async up(queryInterface, Sequelize) {
-        await queryInterface.createTable("black_tokens", {
+        await queryInterface.createTable("reset_password_codes", {
             id: {
                 allowNull: false,
                 autoIncrement: true,
@@ -14,7 +14,8 @@ module.exports = {
                 autoIncrement: true,
                 primaryKey: true
             },
-            access_token: Sequelize.STRING,
+            email: Sequelize.STRING,
+            reset_code: Sequelize.STRING,
             expired: Sequelize.DATE,
             created_at: {
                 allowNull: false,
@@ -27,6 +28,6 @@ module.exports = {
         })
     },
     async down(queryInterface, Sequelize) {
-        await queryInterface.dropTable("black_tokens")
+        await queryInterface.dropTable("reset_password_codes")
     },
 }

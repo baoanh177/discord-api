@@ -18,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
                 autoIncrement: true,
                 primaryKey: true
             },
+            user_id: DataTypes.INTEGER,
             refresh_token: DataTypes.STRING,
             expired: DataTypes.DATE
         },

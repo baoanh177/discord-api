@@ -14,6 +14,7 @@ module.exports = {
                 autoIncrement: true,
                 primaryKey: true
             },
+            user_id: Sequelize.INTEGER,
             refresh_token: Sequelize.STRING,
             expired: Sequelize.DATE,
             created_at: {

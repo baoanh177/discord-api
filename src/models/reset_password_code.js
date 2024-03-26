@@ -1,7 +1,7 @@
 "use strict"
 const { Model } = require("sequelize")
 module.exports = (sequelize, DataTypes) => {
-    class Black_token extends Model {
+    class Reset_password_code extends Model {
         /**
          * Helper method for defining associations.
          * This method is not a part of Sequelize lifecycle.
@@ -11,23 +11,24 @@ module.exports = (sequelize, DataTypes) => {
             // define association here
         }
     }
-    Black_token.init(
+    Reset_password_code.init(
         {
             id: {
                 type: DataTypes.INTEGER,
                 autoIncrement: true,
                 primaryKey: true,
             },
-            access_token: DataTypes.STRING,
+            email: DataTypes.STRING,
+            reset_code: DataTypes.INTEGER,
             expired: DataTypes.DATE,
         },
         {
             sequelize,
-            modelName: "Black_token",
-            tableName: "black_tokens",
+            modelName: "Reset_password_code",
+            tableName: "reset_password_codes",
             createdAt: "created_at",
             updatedAt: "updated_at"
         }
     )
-    return Black_token
+    return Reset_password_code
 }

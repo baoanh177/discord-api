@@ -1,4 +1,4 @@
-const { string } = require("yup")
+const { string, object } = require("yup")
 const validation = require("../../core/validation")
 
 module.exports = {
@@ -31,6 +31,27 @@ module.exports = {
             email: string()
                 .required("Email is required")
                 .email("Email is invalid")
+        }
+        return await validation(body, rules)
+    },
+    forgotPasswordValidate: async (email) => {
+        const rules = {
+            email: string()
+                .required("Email is required")
+                .email("Email is invalid")
+        }
+        return await validation({ email }, rules)
+    },
+    resetPasswordValidate: async (body) => {
+        const rules = {
+            email: string()
+                .required("Email is required")
+                .email("Email is invalid"),
+            resetCode: string()
+                .required("Reset code is required"),
+            newPassword: string()
+                .min(6, "Password needs a minimum of 6 characters")
+                .required("Password is required")
         }
         return await validation(body, rules)
     }
