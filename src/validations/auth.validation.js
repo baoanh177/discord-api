@@ -42,6 +42,16 @@ module.exports = {
         }
         return await validation({ email }, rules)
     },
+    checkResetCodeValidate: async (body) => {
+        const rules = {
+            email: string()
+                .required("Email is required")
+                .email("Email is invalid"),
+            resetCode: string()
+                .required("Reset code is required")
+        }
+        return await validation(body, rules)
+    },
     resetPasswordValidate: async (body) => {
         const rules = {
             email: string()

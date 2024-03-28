@@ -4,6 +4,8 @@ const {
     sendVerifyLinkValidate,
     forgotPasswordValidate,
     resetPasswordValidate,
+    checkResetCodeValidate,
+    checkVerifyCodeValidate,
 } = require("../../validations/auth.validation")
 const { successResponse, errorResponse } = require("../../utils/response")
 const authServices = require("../../services/auth.service")
@@ -27,7 +29,7 @@ module.exports = {
             if (!loginResult.ok) {
                 return errorResponse(
                     res,
-                    loginResult.status || 401,
+                    loginResult.status || 400,
                     loginResult.message || "Bad Request",
                     loginResult.errors
                 )
@@ -69,9 +71,9 @@ module.exports = {
     logout: async (req, res) => {
         try {
             const logoutResult = await authServices.logout(req.user.accessToken)
-            if(!logoutResult.ok) return errorResponse(res, 401, "Unauthorized")
+            if (!logoutResult.ok) return errorResponse(res, 401, "Unauthorized")
             successResponse(res, 200, "Success")
-        }catch(e) {
+        } catch (e) {
             errorResponse(res, 500, "Server Error")
         }
     },
@@ -104,9 +106,16 @@ module.exports = {
             }
 
             // Service
-            const resetPasswordResult = await authServices.resetPassword(req.body)
-            if(!resetPasswordResult.ok) {
-                return errorResponse(res, 400, "Bad Request", resetPasswordResult.errors)
+            const resetPasswordResult = await authServices.resetPassword(
+                req.body
+            )
+            if (!resetPasswordResult.ok) {
+                return errorResponse(
+                    res,
+                    400,
+                    "Bad Request",
+                    resetPasswordResult.errors
+                )
             }
             successResponse(res, 200, "Success")
         } catch (e) {
@@ -165,13 +174,44 @@ module.exports = {
     refreshToken: async (req, res) => {
         try {
             const { refreshToken } = req.body
-            if (!refreshToken.trim()) return errorResponse(res, 400, "Bad Request")
+            if (!refreshToken.trim())
+                return errorResponse(res, 400, "Bad Request")
 
-            const refreshTokenResult = await authServices.refreshToken(refreshToken)
-            if (!refreshTokenResult.ok) return errorResponse(res, 401, "Unauthorized")
+            const refreshTokenResult = await authServices.refreshToken(
+                refreshToken
+            )
+            if (!refreshTokenResult.ok)
+                return errorResponse(res, 401, "Unauthorized")
             successResponse(res, 200, "Success", refreshTokenResult.data)
         } catch (e) {
             console.log(e)
+            errorResponse(res, 500, "Server Error")
+        }
+    },
+    checkResetCode: async (req, res) => {
+        try {
+            const validateResult = await checkResetCodeValidate(req.body)
+            if (!validateResult.ok) {
+                return errorResponse(
+                    res,
+                    400,
+                    "Bad Request",
+                    validateResult.errors
+                )
+            }
+
+            const checkResetCodeResult = await authServices.checkResetCode(
+                req.body
+            )
+            if (!checkResetCodeResult.ok)
+                return errorResponse(
+                    res,
+                    400,
+                    "Bad Request",
+                    "Invalid reset code"
+                )
+            successResponse(res, 200, "Success")
+        } catch (e) {
             errorResponse(res, 500, "Server Error")
         }
     },

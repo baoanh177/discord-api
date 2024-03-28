@@ -1,6 +1,11 @@
 const bcrypt = require("bcrypt")
 const { createAccess, createRefresh } = require("../utils/jwt")
-const { User, Users_token, Reset_password_code, Black_token } = require("../models/index")
+const {
+    User,
+    Users_token,
+    Reset_password_code,
+    Black_token,
+} = require("../models/index")
 const sendMail = require("../utils/mail")
 const { activeAccountTemp, forgotPasswordTemp } = require("../../mails")
 
@@ -31,19 +36,22 @@ module.exports = {
                 errors: "Account has not been activated",
             }
         }
-        
+
         const refresh = createRefresh()
         const userToken = await Users_token.create({
             user_id: user.id,
             refresh_token: refresh,
             expired: new Date(),
         })
-        const access = createAccess({ userId: user.id, refreshId: userToken.id })
+        const access = createAccess({
+            userId: user.id,
+            refreshId: userToken.id,
+        })
         return {
             ok: true,
             data: {
                 user,
-                tokens: { access, refresh },
+                tokens: { accessToken: access, refreshToken: refresh },
             },
         }
     },
@@ -72,10 +80,7 @@ module.exports = {
                 `${process.env.CLIENT_BASE_URL}/verify?code=${verifyCode}`
             )
         )
-        return {
-            ok: true,
-            data: { verifyCode },
-        }
+        return { ok: true }
     },
     logout: async (accessToken) => {
         try {
@@ -83,11 +88,11 @@ module.exports = {
             const expired = new Date(exp * 1000)
             await Black_token.create({
                 access_token: accessToken,
-                expired
+                expired,
             })
-            await Users_token.destroy({ where: { id: refreshId }})
+            await Users_token.destroy({ where: { id: refreshId } })
             return { ok: true }
-        }catch(e) {
+        } catch (e) {
             return { ok: false }
         }
     },
@@ -119,7 +124,7 @@ module.exports = {
             email,
             "Reset your Discord password",
             forgotPasswordTemp(
-                `${process.env.CLIENT_BASE_URL}/reset-password?code=${resetCode}`
+                `${process.env.CLIENT_BASE_URL}/reset-password?email=${email}&code=${resetCode}`
             )
         )
         return { ok: true }
@@ -186,7 +191,7 @@ module.exports = {
             email,
             "Activate your Discord account",
             activeAccountTemp(
-                `${process.env.CLIENT_BASE_URL}/verify?code=${user.verify_code}`
+                `${process.env.CLIENT_BASE_URL}/verify?email=${email}&code=${user.verify_code}`
             )
         )
         return { ok: true }
@@ -217,5 +222,13 @@ module.exports = {
         } catch (e) {
             return { ok: false }
         }
+    },
+    checkResetCode: async (body) => {
+        const { email, resetCode } = body
+        const reset = await Reset_password_code.findOne({
+            where: { email, reset_code: resetCode },
+        })
+        if(!reset || new Date() > reset.expired) return { ok: false }
+        return { ok: true }
     },
 }

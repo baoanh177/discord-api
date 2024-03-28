@@ -10,6 +10,7 @@ router.post("/forgot-password", authController.forgotPassword)
 router.post("/reset-password", authController.resetPassword)
 router.post("/active-account", authController.sendVerifyLink)
 router.post("/verify", authController.verify)
+router.post("/check-reset-code", authController.checkResetCode)
 router.post("/refresh-token", authController.refreshToken)
 
 module.exports = router

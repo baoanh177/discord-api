@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
                 primaryKey: true,
             },
             email: DataTypes.STRING,
-            reset_code: DataTypes.INTEGER,
+            reset_code: DataTypes.STRING,
             expired: DataTypes.DATE,
         },
         {
