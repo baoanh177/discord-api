@@ -12,5 +12,6 @@ router.post("/active-account", authController.sendVerifyLink)
 router.post("/verify", authController.verify)
 router.post("/check-reset-code", authController.checkResetCode)
 router.post("/refresh-token", authController.refreshToken)
+router.post("/check-access", authMiddleware, authController.checkAccess)
 
 module.exports = router

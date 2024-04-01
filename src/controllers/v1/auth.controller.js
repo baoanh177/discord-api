@@ -215,4 +215,7 @@ module.exports = {
             errorResponse(res, 500, "Server Error")
         }
     },
+    checkAccess: async (req, res) => {
+        successResponse(res, 200, "Success")
+    }
 }

@@ -3,7 +3,7 @@ const jwt = require("../utils/jwt")
 const { errorResponse } = require("../utils/response")
 
 module.exports = async (req, res, next) => {
-    const accessToken = req.get("Authorization").split(" ").at(1)
+    const accessToken = req.get("Authorization")?.split(" ").at(1)
     try {
         if (!accessToken) throw new Error()
         const blackToken = await Black_token.findOne({

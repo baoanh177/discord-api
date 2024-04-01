@@ -18,14 +18,14 @@ module.exports = {
         if (!user) {
             return {
                 ok: false,
-                message: "Email or password is incorrect",
+                errors: "Email or password is incorrect",
             }
         }
         const passwordHash = user.password
         if (!bcrypt.compareSync(password, passwordHash)) {
             return {
                 ok: false,
-                message: "Email or password is incorrect",
+                errors: "Email or password is incorrect",
             }
         }
         if (!user.status) {
