@@ -9,6 +9,9 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Server.hasMany(models.Users_server, {
+        foreignKey: "server_id"
+      })
     }
   }
   Server.init(

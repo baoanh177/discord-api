@@ -28,5 +28,5 @@ module.exports = (sequelize, DataTypes) => {
     createdAt: "created_at",
     updatedAt: "updated_at"
   });
-  return Server_role;
+  return Servers_role;
 };
