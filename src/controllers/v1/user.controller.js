@@ -1,13 +1,14 @@
 const { errorResponse, successResponse } = require("../../utils/response");
 const userService = require("../../services/user.service");
 const { addUserValidate, updateUserValidate } = require("../../validations/user.validation");
+const UserTransformer = require("../../transformers/user.transformer")
 
 module.exports = {
-  getAllUsers: async (req, res) => {
+  getUsers: async (req, res) => {
     try {
-      const getAllUsersResult = await userService.getAllUsers();
-      if (!getAllUsersResult.ok) return errorResponse(res, 500, "Server Error");
-      successResponse(res, 200, "Success", getAllUsersResult.data);
+      const getUsersResult = await userService.getUsers(req.query);
+      if (!getUsersResult.ok) return errorResponse(res, 500, "Server Error");
+      successResponse(res, 200, "Success", new UserTransformer(getUsersResult.data));
     } catch (e) {
       console.log(e)
       errorResponse(res, 500, "Server Error");
@@ -18,7 +19,7 @@ module.exports = {
       const { id } = req.params;
       const { ok, data } = await userService.getOneUser(id);
       if (!ok) return errorResponse(res, 404, "Not Found");
-      successResponse(res, 200, "Success", data);
+      successResponse(res, 200, "Success", new UserTransformer(data));
     } catch (e) {
       console.log(e);
       errorResponse(res, 500, "Server Error");

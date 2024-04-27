@@ -27,8 +27,8 @@ module.exports = (sequelize, DataTypes) => {
             gender: DataTypes.STRING,
             avatar: DataTypes.STRING,
             status: {
-                type: DataTypes.BOOLEAN,
-                defaultValue: false
+                type: DataTypes.INTEGER,
+                defaultValue: 1
             },
             verify_code: DataTypes.STRING
         },

@@ -1,13 +1,46 @@
+const { Op } = require("sequelize");
 const { Server, User, Users_server } = require("../models/index");
 const bcrypt = require("bcrypt");
 
 module.exports = {
-  getAllUsers: async () => {
-    const users = await User.findAll({
+  getUsers: async (query) => {
+    const filter = {};
+    const {
+      sort = "id",
+      order = "asc",
+      status,
+      q,
+      page = 1,
+      limit = 10,
+    } = query;
+
+    const options = {
+      where: filter,
       attributes: {
         exclude: ["password", "verify_code"],
       },
-    });
+      order: [[sort, order]],
+      limit,
+    };
+
+    if (status) filter.status = status;
+    if (q) {
+      filter[Op.or] = {
+        name: {
+          [Op.iLike]: `%${q}%`,
+        },
+        email: {
+          [Op.iLike]: `%${q}%`,
+        },
+      };
+    }
+    if (Number.isInteger(+limit) && Number.isInteger(+page)) {
+      const offset = (page - 1) * limit;
+      options.offset = offset;
+      options.limit = limit;
+    }
+
+    const { count, rows: users } = await User.findAndCountAll(options);
     return { ok: true, data: users };
   },
   getOneUser: async (id) => {
@@ -42,7 +75,7 @@ module.exports = {
     return { ok: true };
   },
   deleteUser: async (id) => {
-    await User.destroy({ where: { id } })
-    return { ok: true }
-  }
+    await User.destroy({ where: { id } });
+    return { ok: true };
+  },
 };

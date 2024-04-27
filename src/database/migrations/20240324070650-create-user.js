@@ -20,8 +20,8 @@ module.exports = {
             gender: Sequelize.STRING,
             avatar: Sequelize.STRING,
             status: {
-                type: Sequelize.BOOLEAN,
-                defaultValue: false
+                type: Sequelize.INTEGER,
+                defaultValue: 0
             },
             verify_code: Sequelize.STRING,
             created_at: {

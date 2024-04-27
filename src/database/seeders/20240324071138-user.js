@@ -22,7 +22,7 @@ module.exports = {
                 password: passwordHash,
                 gender: "male",
                 avatar: faker.image.avatarLegacy(),
-                status: true,
+                status: 1,
                 created_at: new Date(),
                 updated_at: new Date()
             }
@@ -32,9 +32,9 @@ module.exports = {
                 name: faker.person.fullName(),
                 email: faker.internet.email(),
                 password: passwordHash,
-                gender: faker.person.gender(),
+                gender: ["male", "female", "other"][faker.number.int({ min: 0, max: 2 })],
                 avatar: faker.image.avatarLegacy(),
-                status: true,
+                status: faker.number.int({ min: 0, max: 2 }),
                 created_at: new Date(),
                 updated_at: new Date()
             })

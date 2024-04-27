@@ -21,19 +21,26 @@ module.exports = {
         errors: "Email or password is incorrect",
       };
     }
-    const passwordHash = user.password;
-    if (!bcrypt.compareSync(password, passwordHash)) {
+    if (user.status == 2) {
       return {
         ok: false,
-        errors: "Email or password is incorrect",
+        status: 403,
+        message: "Forbidden",
+        errors: "Blocked",
       };
-    }
-    if (!user.status) {
+    }else if(user.status != 1) {
       return {
         ok: false,
         status: 403,
         message: "Forbidden",
         errors: "Account has not been activated",
+      };
+    }
+    const passwordHash = user.password;
+    if (!bcrypt.compareSync(password, passwordHash)) {
+      return {
+        ok: false,
+        errors: "Email or password is incorrect",
       };
     }
 
@@ -97,6 +104,9 @@ module.exports = {
     }
   },
   forgotPassword: async (email) => {
+    const user = await User.findOne({ where: { email, status: 1 }})
+    if(!user) return { ok: false }
+
     const resetCode = (Math.random() + new Date().getTime())
       .toString()
       .replace(".", "");
@@ -132,7 +142,7 @@ module.exports = {
   resetPassword: async (body) => {
     const { email, resetCode, newPassword } = body;
 
-    const user = await User.findOne({ where: { email } });
+    const user = await User.findOne({ where: { email, status: 1 } });
     if (!user) {
       return {
         ok: false,
@@ -156,7 +166,7 @@ module.exports = {
   },
   verify: async (verifyCode) => {
     const user = await User.findOne({
-      where: { verify_code: verifyCode },
+      where: { verify_code: verifyCode, status: 0 },
     });
 
     if (!user) {
@@ -173,7 +183,7 @@ module.exports = {
     return { ok: true };
   },
   sendVerifyLink: async (email) => {
-    const user = await User.findOne({ where: { email } });
+    const user = await User.findOne({ where: { email, status: 0 } });
     if (!user) {
       return {
         ok: false,

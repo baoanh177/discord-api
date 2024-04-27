@@ -1,4 +1,4 @@
-const { object, string, boolean } = require("yup");
+const { object, string, number } = require("yup");
 const validation = require("../../core/validation");
 
 module.exports = {
@@ -12,12 +12,12 @@ module.exports = {
         .test("check-gender", "Gender invalid", (value) => {
           return value == "male" || value == "female" || value == "other";
         }),
-      status: string()
+      status: number()
         .required("Status is required")
         .test(
           "check-status",
           "Status invalid",
-          (value) => value == "true" || value == "false"
+          (value) => value == 0 || value == 1 || value == 2
         ),
       avatar: string(),
       verify_code: string(),
@@ -33,7 +33,13 @@ module.exports = {
         .test("check-gender", "Gender invalid", (value) => {
           return value == "male" || value == "female" || value == "other";
         }),
-      status: boolean().required("Status is required"),
+      status: number()
+        .required("Status is required")
+        .test(
+          "check-status",
+          "Status invalid",
+          (value) => value == 0 || value == 1 || value == 2
+        ),
       avatar: string(),
     };
 
